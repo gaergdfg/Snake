@@ -22,16 +22,20 @@ function createPoint(a, b) {
     return {x : a, y : b};
 }
 
-function delet(temp) {
-    for(var i = freeFields.length - 1; i > 0; i--) {
-        if(temp.x == freeFields[i].x && temp.y == freeFields[i].y) {
-            freeFields.slice(i, 1);
-        }
+function delet(myIndex) {
+    if(myIndex == 0) {
+        freeFields.shift();
+    } else if(myIndex == freeFields.length) {
+        freeFields.pop();
+    } else if(myIndex != -1) {
+        var a = freeFields.slice(0, myIndex);
+        var b = freeFields.slice(myIndex + 1, freeFields.length);
+        freeFields = a.concat(b);
     }
 }
 
 function myFind(obj) {
-    for(var i = 0; i < freeFields.length; i++) {
+    for(var i = 0; i < freeFields.length; i++) {                        // $.each
         if(obj.x == freeFields[i].x && obj.y == freeFields[i].y) {
             return i;
         }
@@ -49,7 +53,6 @@ function main() {
         isSnakeDead();
         drawGame();
     }
-    console.log(freeFields.length);
 }
 
 function getApple() {
@@ -66,10 +69,7 @@ function initGame() {
             freeFields.push(createPoint(i, j));
     snakePos = [];
     snakePos.push(createPoint(a, b));
-    // console.log(myFind(snakePos[0]));
-    freeFields.slice(myFind(snakePos[0]), 1);
-    // console.log(snakePos[0]);
-    // delet(snakePos[0]);
+    delet(myFind(snakePos[0]));
     dir = olddir = "D";
     apple = getApple();
     score = 0;
@@ -96,10 +96,7 @@ function updateSnake() {
             snakePos.unshift(createPoint(a, b + 1));
             break;
     }
-    // console.log(myFind(snakePos[0]));
-    freeFields.slice(myFind(snakePos[0]), 1);
-    // console.log(snakePos[0]);
-    // delet(snakePos[0]);
+    delet(myFind(snakePos[0]));
     removed = snakePos.pop();
     freeFields.push(removed);
     olddir = dir;
@@ -109,10 +106,7 @@ function catchedApple() {
     if(snakePos[0].x == apple.x && snakePos[0].y == apple.y) {
         apple = getApple();
         snakePos.push(removed);
-        // console.log(myFind(snakePos[snakePos.length - 1]));
-        freeFields.slice(myFind(snakePos[snakePos.length - 1]), 1);
-        // console.log(snakePos[snakePos.length - 1]);
-        // delet(snakePos[snakePos.length - 1]);
+        delet(myFind(snakePos[snakePos.length - 1]));
         score++;
     }
 }
@@ -146,7 +140,6 @@ function drawPause() {
         ctx.font = "bold 24px Arial";
         ctx.textAlign = "right";
         ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-        // ctx.fillText("Highscore: " + highscore, canvas.width - 12, 30);
         ctx.fillText("Highscore: " + $.cookie("highscore"), canvas.width - 12, 30);
         ctx.closePath();
     }
@@ -192,7 +185,6 @@ function drawGame() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
     ctx.font = "bold 24px Arial";
     ctx.textAlign = "right";
-    // ctx.fillText("Highscore: " + (highscore ? highscore : "-.-"), canvas.width - 12, 30);
     ctx.fillText("Highscore: " + ($.cookie("highscore") ? $.cookie("highscore") : "-.-"), canvas.width - 12, 30);
     ctx.closePath();
 
