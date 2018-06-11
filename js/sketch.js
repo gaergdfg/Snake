@@ -23,20 +23,14 @@ function createPoint(a, b) {
 }
 
 function delet(myIndex) {
-    if(myIndex == 0) {
-        freeFields.shift();
-    } else if(myIndex == freeFields.length) {
-        freeFields.pop();
-    } else if(myIndex != -1) {
-        var a = freeFields.slice(0, myIndex);
-        var b = freeFields.slice(myIndex + 1, freeFields.length);
-        freeFields = a.concat(b);
-    }
+    var a = freeFields.slice(0, myIndex);
+    var b = freeFields.slice(myIndex + 1, freeFields.length);
+    freeFields = a.concat(b);
 }
 
-function myFind(obj) {
-    for(var i = 0; i < freeFields.length; i++) {                        // $.each
-        if(obj.x == freeFields[i].x && obj.y == freeFields[i].y) {
+function myFind(curr) {
+    for(var i = 0; i < freeFields.length; i++) {
+        if(curr.x == freeFields[i].x && curr.y == freeFields[i].y) {
             return i;
         }
     }
@@ -165,9 +159,12 @@ function drawGame() {
     ctx.closePath();
 
     // Snake
-    for (var i = parseInt(0); i < snakePos.length; i++) {
+    var low = Math.max(60, 256 / snakePos.length);
+    var shading = (snakePos.length == 1 ? null : ((256 - low) / (snakePos.length - 1)));
+    for (var i = 0; i < snakePos.length; i++) {
+        var color = 256 - Math.floor(i * shading);
         ctx.beginPath();
-        ctx.fillStyle = "white";
+        ctx.fillStyle = "rgba(45, " + color + ", 0)";
         ctx.rect(snakePos[i].x * tileSize + 1, snakePos[i].y * tileSize + 1, tileSize - 2, tileSize - 2);
         ctx.fill();
         ctx.closePath();
